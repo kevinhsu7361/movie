@@ -9,46 +9,46 @@ namespace movie.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MoviesController : ControllerBase
+    public class CustomersController : ControllerBase
     {
         private readonly MovieContext db;
 
-        public MoviesController(MovieContext db)
+        public CustomersController(MovieContext db)
         {
             this.db = db;
         }
 
         [HttpGet("")]
-        public ActionResult<IEnumerable<Movie>> GetMovies()
+        public ActionResult<IEnumerable<Customer>> GetCustomers()
         {
-            return db.Movies;
+            return db.Customers;
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Movie> GetMovieById(int id)
+        public ActionResult<Customer> GetCustomerById(int id)
         {
-            var movie = db.Movies.Find(id);
-            if(movie==null)
+            var customer = db.Customers.Find(id);
+            if(customer==null)
             {
                 return NotFound();
             }
-            return movie;
+            return customer;
         }
 
         [HttpPost("")]
-        public ActionResult<Movie> PostMovie(Movie model)
+        public ActionResult<Customer> PostCustomer(Customer model)
         {
             return null;
         }
 
         [HttpPut("{id}")]
-        public IActionResult PutMovie(int id, Movie model)
+        public IActionResult PutCustomer(int id, Customer model)
         {
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public ActionResult<Movie> DeleteMovieById(int id)
+        public ActionResult<Customer> DeleteCustomerById(int id)
         {
             return null;
         }
