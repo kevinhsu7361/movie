@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using movie.Models;
+using movie.ViewModels;
+using Omu.ValueInjecter;
 
 namespace movie.Controllers
 {
@@ -21,18 +23,25 @@ namespace movie.Controllers
         [HttpGet("")]
         public ActionResult<IEnumerable<Movie>> GetMovies()
         {
-            return db.Movies;
+            // 只會 inject 到相對應的欄位。
+            //var customers = db.Customers.Include(c=>c.MemberShip).Select(c => (new CustomerRead()).InjectFrom(c) as CustomerRead);
+            var movies = db.Movies;
+            var customerDetails = (new MovieRead()).InjectFrom(movies) as MovieRead;
+            //customerDetails.MemberShipName
+            return Ok(movies);
         }
 
         [HttpGet("{id}")]
         public ActionResult<Movie> GetMovieById(int id)
         {
             var movie = db.Movies.Find(id);
-            if(movie==null)
+            if (movie == null)
             {
                 return NotFound();
             }
-            return movie;
+            var movieDetail = (new MovieRead()).InjectFrom(movie) as MovieRead;
+            //customerDetail.MemberShipName = customer.MemberShip.MemberShipName;
+            return Ok(movieDetail);
         }
 
         [HttpPost("")]

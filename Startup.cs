@@ -31,8 +31,8 @@ namespace movie
             // using Microsoft.EntityFrameworkCore;
             services.AddDbContext<MovieContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-                    
-            services.AddControllers();
+
+            services.AddControllers().AddNewtonsoftJson();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "movie", Version = "v1" });

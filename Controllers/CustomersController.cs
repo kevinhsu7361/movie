@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using movie.Models;
+using movie.ViewModels;
+using Omu.ValueInjecter;
 
 namespace movie.Controllers
 {
@@ -19,20 +22,27 @@ namespace movie.Controllers
         }
 
         [HttpGet("")]
-        public ActionResult<IEnumerable<Customer>> GetCustomers()
+        public ActionResult<IEnumerable<CustomerRead>> GetCustomers()
         {
-            return db.Customers;
+            // 只會 inject 到相對應的欄位。
+            //var customers = db.Customers.Include(c=>c.MemberShip).Select(c => (new CustomerRead()).InjectFrom(c) as CustomerRead);
+            var customers = db.Customers;
+            var customerDetails = (new CustomerRead()).InjectFrom(customers) as CustomerRead;
+            //customerDetails.MemberShipName
+            return Ok(customers);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Customer> GetCustomerById(int id)
+        public ActionResult<CustomerRead> GetCustomerById(int id)
         {
             var customer = db.Customers.Find(id);
             if(customer==null)
             {
                 return NotFound();
             }
-            return customer;
+            var customerDetail = (new CustomerRead()).InjectFrom(customer) as CustomerRead;
+            //customerDetail.MemberShipName = customer.MemberShip.MemberShipName;
+            return Ok(customerDetail);
         }
 
         [HttpPost("")]
