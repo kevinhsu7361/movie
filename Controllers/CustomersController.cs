@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -24,12 +25,20 @@ namespace movie.Controllers
         [HttpGet("")]
         public ActionResult<IEnumerable<CustomerRead>> GetCustomers()
         {
-            // 只會 inject 到相對應的欄位。
-            //var customers = db.Customers.Include(c=>c.MemberShip).Select(c => (new CustomerRead()).InjectFrom(c) as CustomerRead);
-            var customers = db.Customers;
-            var customerDetails = (new CustomerRead()).InjectFrom(customers) as CustomerRead;
-            //customerDetails.MemberShipName
-            return Ok(customers);
+            List<CustomerRead> customerDetails = new List<CustomerRead>();
+            var customers = db.Customers.ToList();
+            foreach (var customer in customers)
+            {
+                if (customer == null)
+                {
+                    return NotFound();
+                }
+                db.Entry(customer).Reference(c => c.MemberShip).Load();
+                var customerDetail = (new CustomerRead()).InjectFrom(customer) as CustomerRead;
+                customerDetail.MemberShipName = customer.MemberShip.MemberShipName;
+                customerDetails.Add(customerDetail);
+            }
+            return Ok(customerDetails);
         }
 
         [HttpGet("{id}")]
@@ -40,27 +49,41 @@ namespace movie.Controllers
             {
                 return NotFound();
             }
+            db.Entry(customer).Reference(c => c.MemberShip).Load();
             var customerDetail = (new CustomerRead()).InjectFrom(customer) as CustomerRead;
-            //customerDetail.MemberShipName = customer.MemberShip.MemberShipName;
+            customerDetail.MemberShipName = customer.MemberShip.MemberShipName;
             return Ok(customerDetail);
         }
 
         [HttpPost("")]
         public ActionResult<Customer> PostCustomer(Customer model)
         {
-            return null;
+            /*var item = Mapper.Map<Post>(model);
+            db.Posts.Add(item);
+            db.SaveChanges();*/
+            return model;
         }
 
         [HttpPut("{id}")]
         public IActionResult PutCustomer(int id, Customer model)
         {
+            /*var item = db.Posts.Find(id);
+            if (item == null)
+            {
+                return NotFound();
+            }
+            item.DepartmentId = model.DepartmentId;
+            db.SaveChanges();*/
             return NoContent();
         }
 
         [HttpDelete("{id}")]
         public ActionResult<Customer> DeleteCustomerById(int id)
         {
-            return null;
+            var customer = db.Customers.Find(id);
+            db.Customers.Remove(customer);
+            db.SaveChanges();
+            return Ok();
         }
     }
 }
