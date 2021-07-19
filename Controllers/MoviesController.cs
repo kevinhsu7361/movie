@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.EntityFrameworkCore;
 using movie.Models;
 using movie.ViewModels;
 using Omu.ValueInjecter;
@@ -22,8 +23,13 @@ namespace movie.Controllers
         }
 
         [HttpGet("")]
-        public ActionResult<IEnumerable<Movie>> GetMovies()
-        {
+        public ActionResult<IEnumerable<MovieRead>> GetMovies()
+        {   
+            /*
+            var movies = from p in db.Movies select (new MovieRead()).InjectFrom(p);
+            return Ok(movies);
+            */
+            
             List<MovieRead> movieDetails = new List<MovieRead>();
             var movies = db.Movies.ToList();
             foreach (var movie in movies)
@@ -38,6 +44,7 @@ namespace movie.Controllers
                 movieDetails.Add(movieDetail);
             }
             return Ok(movieDetails);
+            
         }
 
         [HttpGet("{id}")]
@@ -57,12 +64,24 @@ namespace movie.Controllers
         [HttpPost("")]
         public ActionResult<Movie> PostMovie(Movie model)
         {
-            return null;
+            db.Entry(model).State = EntityState.Added;
+            db.SaveChanges();
+            return CreatedAtAction(nameof(GetMovieById),new{id=model.MovieId},model);
         }
 
         [HttpPut("{id}")]
         public IActionResult PutMovie(int id, Movie model)
         {
+            var movie = db.Movies.Find(id);
+            if(movie==null)
+            {
+                return NotFound();
+            }
+            movie.MovieId = model.MovieId; // 指定欄位
+            movie.MovieName = model.MovieName;
+            movie.MovieContent = model.MovieContent;
+            //db.Update(model);
+            db.SaveChanges();
             return NoContent();
         }
 

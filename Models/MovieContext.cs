@@ -84,9 +84,7 @@ namespace movie.Models
             {
                 entity.ToTable("Movie");
 
-                entity.Property(e => e.MovieId)
-                    .ValueGeneratedNever()
-                    .HasColumnName("MovieID");
+                entity.Property(e => e.MovieId).HasColumnName("MovieID");
 
                 entity.Property(e => e.GenreId).HasColumnName("GenreID");
 

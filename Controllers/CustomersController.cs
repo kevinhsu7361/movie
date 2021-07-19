@@ -58,22 +58,22 @@ namespace movie.Controllers
         [HttpPost("")]
         public ActionResult<Customer> PostCustomer(Customer model)
         {
-            /*var item = Mapper.Map<Post>(model);
-            db.Posts.Add(item);
-            db.SaveChanges();*/
-            return model;
+            db.Customers.Add(model);
+            db.SaveChanges();
+            return CreatedAtAction(nameof(GetCustomerById), new { id = model.CustomerId }, model);
         }
 
         [HttpPut("{id}")]
         public IActionResult PutCustomer(int id, Customer model)
         {
-            /*var item = db.Posts.Find(id);
-            if (item == null)
+            var customer = db.Customers.Find(id);
+            if (customer == null)
             {
                 return NotFound();
             }
-            item.DepartmentId = model.DepartmentId;
-            db.SaveChanges();*/
+            customer.CustomerId = model.CustomerId;
+            customer.CustomerName = model.CustomerName;
+            db.SaveChanges();
             return NoContent();
         }
 
