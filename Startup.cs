@@ -57,6 +57,7 @@ namespace movie
             else
             {
                 app.UseExceptionHandler("/error");
+                app.UseHsts();
             }
 
             app.UseHttpsRedirection();
@@ -65,6 +66,8 @@ namespace movie
 
             app.UseAuthorization();
 
+            app.UseCors();
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

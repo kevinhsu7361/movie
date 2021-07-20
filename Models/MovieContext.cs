@@ -41,6 +41,8 @@ namespace movie.Models
                     .ValueGeneratedNever()
                     .HasColumnName("CustomerID");
 
+                entity.Property(e => e.BirthDate).HasColumnType("datetime");
+
                 entity.Property(e => e.CustomerName)
                     .IsRequired()
                     .HasMaxLength(50);
